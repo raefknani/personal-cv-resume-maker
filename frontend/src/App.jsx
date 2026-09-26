@@ -13,7 +13,15 @@ import {
 } from "lucide-react";
 import "./index.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000/api";
+const LOCAL_API_BASE = "http://127.0.0.1:8000/api";
+const PRODUCTION_API_BASE =
+  "https://personal-cv-resume-maker-git-master-knanis-projects.vercel.app/api";
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  (window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? LOCAL_API_BASE
+    : PRODUCTION_API_BASE);
 
 const defaultData = {
   personal: {
