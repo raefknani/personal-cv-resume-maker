@@ -25,10 +25,18 @@ from cover_letter_maker.template_generator import SignatureTemplateGenerator
 
 app = FastAPI(title="CV Generator API")
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+allowed_origins = {
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://cv-resume-maker-frontend.vercel.app",
+    FRONTEND_URL.rstrip("/"),
+}
+
 # Allow CORS for local development with Vite
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=sorted(origin for origin in allowed_origins if origin),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,7 +51,6 @@ LIBRARY_FILE = RUNTIME_DATA_DIR / "cv_library.json"
 GOOGLE_TOKEN_FILE = Path(os.getenv("GOOGLE_TOKEN_FILE", Path(__file__).resolve().parent / ".google-drive-token.json"))
 GOOGLE_CLIENT_SECRET_FILE = Path(os.getenv("GOOGLE_CLIENT_SECRET_FILE", Path(__file__).resolve().parent / "credentials.json"))
 GOOGLE_DRIVE_REDIRECT_URI = os.getenv("GOOGLE_DRIVE_REDIRECT_URI", "http://127.0.0.1:8000/api/google-drive/callback")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 OUTPUT_DIR = (Path("/tmp/pdf-creator/output") if SERVERLESS else PROJECT_DIR / "cv_generator" / "output")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 TEMP_SIGNATURE_DIR = (Path("/tmp/pdf-creator/signatures") if SERVERLESS else PROJECT_DIR / "temp" / "signatures")
