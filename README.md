@@ -1,20 +1,18 @@
-The web app loads the built-in CV data initially, saves edits to `saved_data.json`, and downloads generated PDFs from the FastAPI backend. The original `python -m cv_generator.main` CLI remains available.
-
-### Optional Google Drive storage
-
-The Library tab can also save and load CV versions in Google Drive. Local JSON storage continues to work without Google Drive.
-
-1. In Google Cloud Console, create a project, enable the **Google Drive API**, and configure an OAuth consent screen.
-2. Create an OAuth client for a **Web application** and add this redirect URI:
-   `http://127.0.0.1:8000/api/google-drive/callback`
-3. Download the client JSON as `credentials.json` into the project root.
-4. Restart the backend, open the Library tab, and click **Connect Google Drive**.
-
-The app requests only the `drive.file` scope and stores files in Drive's private application-data folder. The OAuth token is saved as `.google-drive-token.json`; do not commit either credentials file.
-
 # Modular CV Generator
 
 This project generates a professional ATS-friendly PDF CV from a centralized data model while preserving a modular architecture.
+
+The web app loads built-in CV data initially, saves edits to `saved_data.json`, and downloads generated PDFs from the FastAPI backend. The original `python -m cv_generator.main` CLI remains available.
+
+## Documentation
+
+Project documentation is available in [`docs/`](docs/README.md):
+
+- [Getting started](docs/getting-started.md)
+- [Architecture](docs/architecture.md)
+- [API reference](docs/api.md)
+- [Deployment](docs/deployment.md)
+- [Privacy and storage](docs/privacy.md)
 
 ## Project structure
 
@@ -91,18 +89,7 @@ The processor accepts PNG/JPEG, corrects EXIF orientation, removes light backgro
 
 Use the **Library** tab to save named CV versions, load the latest versions for editing, or delete old versions. Each editor section has a **Clear** button that resets only that section. **Load Demo CV** fills the editor with safe sample values that can be replaced with your own information.
 
-The **Load from PDF** control in the Library tab imports selectable text from an existing CV PDF and maps common sections into the editor. Review the imported fields before saving. Scanned or image-only PDFs are not supported yet because they require OCR.
-
-### Optional Google Drive storage
-
-The Library tab can also save and load CV versions in Google Drive. Local JSON storage continues to work without Google Drive.
-
-1. In Google Cloud Console, create a project, enable the **Google Drive API**, and configure an OAuth consent screen.
-2. Create an OAuth client for a **Web application** and add this redirect URI: `http://127.0.0.1:8000/api/google-drive/callback`.
-3. Download the client JSON as `credentials.json` into the project root.
-4. Restart the backend, open the Library tab, and click **Connect Google Drive**.
-
-The app requests only the `drive.file` scope and stores files in Drive's private application-data folder. The OAuth token is saved as `.google-drive-token.json`; do not commit either credentials file.
+The **Load from PDF** control in the Library tab imports selectable text from an existing CV PDF and maps common sections into the editor. Review the imported fields before saving. Scanned or image-only PDFs are not supported yet because they require OCR. Google Drive setup details are documented in [`docs/deployment.md`](docs/deployment.md).
 
 ## Modify personal data
 
