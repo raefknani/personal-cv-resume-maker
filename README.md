@@ -1,73 +1,106 @@
-# Modular CV Generator
+# CV Studio
 
-This project generates a professional ATS-friendly PDF CV from a centralized data model while preserving a modular architecture.
+> A professional workspace for creating polished, ATS-friendly CVs and cover letters as searchable PDF documents.
 
-The web app loads built-in CV data initially, saves edits to `saved_data.json`, and downloads generated PDFs from the FastAPI backend. The original `python -m cv_generator.main` CLI remains available.
+CV Studio combines a structured document editor with reusable CV data, PDF import, template-based rendering, handwritten signature support, and a modern React interface.
 
-## Documentation
+## ✨ What it does
 
-Project documentation is available in [`docs/`](docs/README.md):
+### Build a professional CV
 
-- [Getting started](docs/getting-started.md)
-- [Architecture](docs/architecture.md)
-- [API reference](docs/api.md)
-- [Deployment](docs/deployment.md)
-- [Privacy and storage](docs/privacy.md)
+- Edit personal information, profile, skills, experience, projects, education, certifications, and languages.
+- Add and remove skills as organized chips.
+- Save named versions in the local CV library.
+- Import an existing selectable-text CV PDF.
+- Generate ATS-friendly, searchable PDFs.
 
-## Project structure
+### Create a cover letter
 
-- `cv_generator/` contains the data, styling, rendering, validation, and PDF builder logic.
-- `tests/` contains the automated validation and generation checks.
-- `cv_generator/output/` stores the generated PDF file.
+- Reuse information from the CV with one action.
+- Fill a guided Details → Content → Signature workflow.
+- Import an existing cover-letter PDF into editable fields.
+- Choose Classic, Modern, Minimal, or ATS styling.
+- Review changes through a live document preview.
 
-## Installation
+### Add a handwritten signature
 
-```bash
-python -m venv .venv
-```
+- Upload a PNG or JPEG signature.
+- Download a printable signature template.
+- Process a scanned or photographed signature.
+- Remove light backgrounds and transparent margins.
+- Resize and align the signature before PDF generation.
+- Keep the typed name below the signature image.
 
-On Windows:
-
-```powershell
-.venv\Scripts\activate
-```
-
-On Linux/macOS:
-
-```bash
-source .venv/bin/activate
-```
-
-```bash
-pip install -r requirements.txt
-```
-
-## Generate the CV
-
-```bash
-python -m cv_generator.main
-```
-
-The generated file is written to:
+## 🧭 User experience
 
 ```text
-cv_generator/output/CV_Raef_Knani_ATS.pdf
+Choose a document
+    ↓
+Edit structured information
+    ↓
+Reuse CV data or import a PDF
+    ↓
+Select a template
+    ↓
+Preview the document
+    ↓
+Generate a searchable PDF
 ```
 
-The default template is the standard ATS format: single-column layout, clean section headings, and plain text styling for better parsing by recruiters and applicant tracking systems.
+The application is designed so that technical processing—PDF extraction, signature cleanup, rendering, and temporary file handling—stays behind a simple editor interface.
 
-## Use the web application
+## 🏗️ Architecture
 
-Install the Python dependencies and frontend dependencies once, then start the backend and frontend in separate terminals.
+```text
+React + Vite frontend
+      │
+      ▼
+      FastAPI API
+      ┌─────┼─────┐
+      ▼     ▼     ▼
+  CV data  PDF   Signature
+  editor   import processing
+      └─────┼─────┘
+        ▼
+       ReportLab PDFs
+```
 
-Backend:
+| Area                 | Technology          | Responsibility                                   |
+| -------------------- | ------------------- | ------------------------------------------------ |
+| Frontend             | React, Vite, Lucide | Editor, workflow, preview, uploads               |
+| API                  | FastAPI, Pydantic   | HTTP routes and request handling                 |
+| CV generation        | ReportLab           | ATS-friendly searchable CV PDFs                  |
+| PDF import           | pypdf               | Text extraction and field mapping                |
+| Signature processing | Pillow, NumPy       | Orientation, foreground extraction, transparency |
+| Testing              | pytest              | Validation, PDF, import, and signature tests     |
+
+## 📁 Project structure
+
+```text
+.
+├── api/index.py                # Vercel FastAPI entrypoint
+├── server.py                   # FastAPI application
+├── cv_generator/               # CV models, validation, styles, renderer
+├── cover_letter_maker/         # Cover-letter and signature modules
+├── frontend/                   # React/Vite application
+├── tests/                      # Automated backend and PDF tests
+├── docs/                       # Detailed project documentation
+├── requirements.txt            # Python dependencies
+└── vercel.json                 # Backend deployment configuration
+```
+
+## 🚀 Quick start
+
+### Backend
 
 ```powershell
+python -m venv .venv
 .venv\Scripts\activate
+pip install -r requirements.txt
 uvicorn server:app --reload
 ```
 
-Frontend:
+### Frontend
 
 ```powershell
 cd frontend
@@ -75,84 +108,61 @@ npm install
 npm run dev
 ```
 
-Open the Vite URL shown in the frontend terminal (normally `http://localhost:5173`). The web app loads the built-in CV data initially, saves edits to `saved_data.json`, and downloads generated PDFs from the FastAPI backend. The original `python -m cv_generator.main` CLI remains available.
+Open `http://localhost:5173` after both services are running.
 
-## Cover Letter Maker
+### CLI PDF generation
 
-The **Cover Letter** tab supports structured cover letters, reusable CV data, editable text-based PDF import, multiple templates, handwritten signature upload, printable signature templates, transparent PNG previews, and searchable final PDFs.
-
-Signature images are kept in the local `temp/signatures/` directory with randomized names. They are not public assets. Production deployments should add authentication, ownership checks, TTL cleanup, and encrypted private storage before enabling persistent signature assets.
-
-The backend provides `/api/cover-letters/import-pdf`, `/api/cover-letters/generate`, `/api/signatures/template`, `/api/signatures/process-upload`, `/api/signatures/process-template`, and `/api/signatures/{id}/preview`.
-
-The processor accepts PNG/JPEG, corrects EXIF orientation, removes light backgrounds, crops transparent margins, and returns a confidence score. The generated PDF keeps cover-letter text searchable and inserts only the processed signature image.
-
-Use the **Library** tab to save named CV versions, load the latest versions for editing, or delete old versions. Each editor section has a **Clear** button that resets only that section. **Load Demo CV** fills the editor with safe sample values that can be replaced with your own information.
-
-The **Load from PDF** control in the Library tab imports selectable text from an existing CV PDF and maps common sections into the editor. Review the imported fields before saving. Scanned or image-only PDFs are not supported yet because they require OCR. Google Drive setup details are documented in [`docs/deployment.md`](docs/deployment.md).
-
-## Modify personal data
-
-Edit the data in `cv_generator/data/cv_data.py`.
-
-Example:
-
-```python
-CV_DATA["personal"]["title"] = "Software Engineer"
+```powershell
+python -m cv_generator.main
 ```
 
-## Add an experience entry
+### Tests
 
-Append to the `experience` list in `cv_generator/data/cv_data.py`:
-
-```python
-CV_DATA["experience"].append({
-    "position": "Developer",
-    "company": "Example Company",
-    "location": "Tunisia",
-    "start_date": "2024",
-    "end_date": "2025",
-    "description": ["Built a product feature."]
-})
-```
-
-## Add a project
-
-Append to the `projects` list in `cv_generator/data/cv_data.py`:
-
-```python
-CV_DATA["projects"].append({
-    "name": "Project Name",
-    "technologies": "Python, FastAPI",
-    "description": ["Delivered a functional application."]
-})
-```
-
-## Change styling
-
-Update the visual settings in `cv_generator/styles/styles.py`.
-
-## Disable sections
-
-Set entries in `cv_generator/config.py` such as:
-
-```python
-CONFIG["include_projects"] = False
-```
-
-## Create a CV variant
-
-Use `cv_generator/variants/general.py` with `apply_variant`.
-
-Example:
-
-```python
-variant = {"title": "Software Engineer", "section_order": ["profile", "experience"]}
-updated = apply_variant(CV_DATA, variant)
-```
-
-## Run tests
-
-```bash
+```powershell
 pytest
 ```
+
+## 🌐 Deployment
+
+The recommended deployment uses two Vercel projects:
+
+| Project  | Root directory  | Purpose                              |
+| -------- | --------------- | ------------------------------------ |
+| Frontend | `frontend`      | React/Vite interface                 |
+| Backend  | repository root | FastAPI, PDF generation, and uploads |
+
+Set the frontend environment variable to the public backend API:
+
+```text
+VITE_API_BASE=https://your-backend-domain.vercel.app/api
+```
+
+See the complete [deployment guide](docs/deployment.md) for Vercel settings, CORS, environment variables, and smoke tests.
+
+## 📚 Documentation
+
+- [Documentation home](docs/README.md)
+- [Getting started](docs/getting-started.md)
+- [Architecture](docs/architecture.md)
+- [API reference](docs/api.md)
+- [Deployment guide](docs/deployment.md)
+- [Privacy and storage](docs/privacy.md)
+
+## 🔐 Privacy notes
+
+Signature images and uploaded documents are sensitive assets. Local development uses temporary files and JSON storage. Production deployments should add authentication, ownership checks, encrypted private storage, database persistence, signed URLs, and automatic cleanup.
+
+Vercel serverless storage is ephemeral and should not be treated as permanent storage.
+
+## 🛣️ Roadmap
+
+- User accounts and document ownership.
+- Persistent database-backed CV and cover-letter versions.
+- Private object storage for signature assets.
+- OCR support for scanned PDFs.
+- More cover-letter templates.
+- Advanced signature template detection with perspective correction.
+
+## License
+
+Add your preferred license before publishing the project publicly.
