@@ -34,15 +34,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATA_FILE = Path(__file__).resolve().parent / "saved_data.json"
-LIBRARY_FILE = Path(__file__).resolve().parent / "cv_library.json"
+PROJECT_DIR = Path(__file__).resolve().parent
+SERVERLESS = bool(os.getenv("VERCEL"))
+RUNTIME_DATA_DIR = Path("/tmp/pdf-creator") if SERVERLESS else PROJECT_DIR
+RUNTIME_DATA_DIR.mkdir(parents=True, exist_ok=True)
+DATA_FILE = RUNTIME_DATA_DIR / "saved_data.json"
+LIBRARY_FILE = RUNTIME_DATA_DIR / "cv_library.json"
 GOOGLE_TOKEN_FILE = Path(os.getenv("GOOGLE_TOKEN_FILE", Path(__file__).resolve().parent / ".google-drive-token.json"))
 GOOGLE_CLIENT_SECRET_FILE = Path(os.getenv("GOOGLE_CLIENT_SECRET_FILE", Path(__file__).resolve().parent / "credentials.json"))
 GOOGLE_DRIVE_REDIRECT_URI = os.getenv("GOOGLE_DRIVE_REDIRECT_URI", "http://127.0.0.1:8000/api/google-drive/callback")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-OUTPUT_DIR = Path(__file__).resolve().parent / "cv_generator" / "output"
+OUTPUT_DIR = (Path("/tmp/pdf-creator/output") if SERVERLESS else PROJECT_DIR / "cv_generator" / "output")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-TEMP_SIGNATURE_DIR = Path(__file__).resolve().parent / "temp" / "signatures"
+TEMP_SIGNATURE_DIR = (Path("/tmp/pdf-creator/signatures") if SERVERLESS else PROJECT_DIR / "temp" / "signatures")
 TEMP_SIGNATURE_DIR.mkdir(parents=True, exist_ok=True)
 signature_processor = SignatureProcessor()
 signature_storage = TemporarySignatureStorage(TEMP_SIGNATURE_DIR)
