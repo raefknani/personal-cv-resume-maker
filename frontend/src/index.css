@@ -93,6 +93,99 @@ label {
   margin-bottom: 1.5rem;
 }
 
+.skill-editor {
+  padding: 1rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  background: var(--surface-muted);
+}
+
+.skills-editor-list {
+  width: 100%;
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.skill-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skill-input-row input {
+  min-width: 0;
+}
+
+.skill-add-button {
+  flex: 0 0 var(--control-height);
+  width: var(--control-height);
+  min-height: var(--control-height);
+  padding: 0;
+  border-radius: 8px;
+}
+
+.skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2rem;
+  margin-top: 0.85rem;
+}
+
+.skill-clear-button {
+  display: flex;
+  min-height: 30px;
+  margin-top: 0.75rem;
+  margin-left: auto;
+  padding: 0.35rem 0.65rem;
+  color: var(--danger);
+  background: transparent;
+  border: 1px solid rgba(182, 73, 73, 0.3);
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.skill-clear-button:hover {
+  color: #fff;
+  background: var(--danger);
+  box-shadow: none;
+  transform: none;
+}
+
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.42rem 0.55rem 0.42rem 0.8rem;
+  border: 1px solid rgba(63, 111, 174, 0.25);
+  border-radius: 999px;
+  color: var(--accent-primary);
+  background: rgba(63, 111, 174, 0.1);
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.skill-chip button {
+  width: 20px;
+  min-height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--accent-primary);
+  background: transparent;
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.skill-chip button:hover {
+  color: #fff;
+  background: var(--accent-primary);
+  box-shadow: none;
+  transform: none;
+}
+
 textarea {
   min-height: 7rem;
   resize: vertical;
@@ -285,6 +378,10 @@ button.icon-only {
 @media (max-width: 768px) {
   .grid-cols-2 {
     grid-template-columns: 1fr;
+  }
+
+  .skills-editor-list {
+    width: 100%;
   }
 }
 

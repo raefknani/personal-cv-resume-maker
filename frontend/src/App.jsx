@@ -166,6 +166,21 @@ function App() {
   const [signature, setSignature] = useState(null);
   const [signatureLoading, setSignatureLoading] = useState(false);
   const [coverGenerating, setCoverGenerating] = useState(false);
+  const [skillDrafts, setSkillDrafts] = useState({
+    core: "",
+    familiar: "",
+    systems: "",
+  });
+
+  const clearSkillCategory = (category) => {
+    if (!data.skills[category]?.length && !skillDrafts[category]) return;
+    if (!window.confirm(`Clear all ${category} skills?`)) return;
+    setData((previous) => ({
+      ...previous,
+      skills: { ...previous.skills, [category]: [] },
+    }));
+    setSkillDrafts((previous) => ({ ...previous, [category]: "" }));
+  };
 
   const mergeData = (fetched) => ({
     ...defaultData,
@@ -609,6 +624,35 @@ function App() {
       current[path[path.length - 1]] = value;
       return newData;
     });
+  };
+
+  const addSkill = (category) => {
+    const value = skillDrafts[category].trim();
+    if (!value) return;
+
+    setData((previous) => {
+      const skills = previous.skills[category] || [];
+      if (skills.some((skill) => skill.toLowerCase() === value.toLowerCase())) {
+        return previous;
+      }
+      return {
+        ...previous,
+        skills: { ...previous.skills, [category]: [...skills, value] },
+      };
+    });
+    setSkillDrafts((previous) => ({ ...previous, [category]: "" }));
+  };
+
+  const removeSkill = (category, index) => {
+    setData((previous) => ({
+      ...previous,
+      skills: {
+        ...previous.skills,
+        [category]: previous.skills[category].filter(
+          (_, itemIndex) => itemIndex !== index,
+        ),
+      },
+    }));
   };
 
   const addArrayItem = (path, emptyItem) => {
@@ -1190,22 +1234,60 @@ function App() {
                 <RotateCcw size={16} /> Clear Section
               </button>
             </div>
-            <div className="grid">
+            <div className="grid skills-editor-list">
               {["core", "familiar", "systems"].map((cat) => (
-                <div className="form-group" key={cat}>
+                <div className="skill-editor form-group" key={cat}>
                   <label style={{ textTransform: "capitalize" }}>
-                    {cat} Skills (comma separated)
+                    {cat} skills
                   </label>
-                  <textarea
-                    rows={3}
-                    value={data.skills[cat].join(", ")}
-                    onChange={(e) =>
-                      updateNested(
-                        ["skills", cat],
-                        e.target.value.split(",").map((s) => s.trim()),
-                      )
-                    }
-                  />
+                  <div className="skill-input-row">
+                    <input
+                      value={skillDrafts[cat]}
+                      placeholder={`Add a ${cat} skill`}
+                      onChange={(e) =>
+                        setSkillDrafts((previous) => ({
+                          ...previous,
+                          [cat]: e.target.value,
+                        }))
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addSkill(cat);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="skill-add-button"
+                      aria-label={`Add ${cat} skill`}
+                      onClick={() => addSkill(cat)}
+                    >
+                      <Plus size={17} />
+                    </button>
+                  </div>
+                  <div className="skill-chips" aria-live="polite">
+                    {(data.skills[cat] || []).map((skill, index) => (
+                      <span className="skill-chip" key={`${skill}-${index}`}>
+                        {skill}
+                        <button
+                          type="button"
+                          aria-label={`Remove ${skill}`}
+                          onClick={() => removeSkill(cat, index)}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    className="skill-clear-button"
+                    aria-label={`Clear ${cat.charAt(0).toUpperCase() + cat.slice(1)} Skills`}
+                    onClick={() => clearSkillCategory(cat)}
+                  >
+                    Clear {cat.charAt(0).toUpperCase() + cat.slice(1)} Skills
+                  </button>
                 </div>
               ))}
             </div>
